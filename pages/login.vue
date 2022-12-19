@@ -10,7 +10,7 @@
         <template #header>
             <h5 class="mb-0">Log in to your account</h5>
         </template>
-        <b-form @submit="onSubmit">
+        <b-form @submit.prevent="userLogin">
             <b-form-group
                 id="input-group-email"
                 label="Email"
@@ -18,7 +18,7 @@
             >
                 <b-form-input
                 id="email-input"
-                v-model="form.email"
+                v-model="login.email"
                 type="email"
                 required
                 ></b-form-input>
@@ -31,7 +31,7 @@
             >
                 <b-form-input
                 id="password-input"
-                v-model="form.password"
+                v-model="login.password"
                 type="password"
                 required
                 ></b-form-input>
@@ -48,12 +48,22 @@ import Vue from 'vue'
 
 export default Vue.extend({
   name: 'LoginPage',
-  data () {
+  data() {
     return {
-        form: {
+        login: {
             email: "",
             password: ""
         }
+    }
+  },
+  methods: {
+    async userLogin() {
+      try {
+        let response = await this.$auth.loginWith('local', { data: { login: this.login } })
+        console.log(response)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 })

@@ -4,8 +4,8 @@
       <b-navbar-brand href="#">
         <img width="40px" src="favicon.png" alt="ICON">
       </b-navbar-brand>
-      Hello, Felipe
-      <b-btn variant="danger" size="sm">Logout</b-btn>
+      Hello Dear, You're Welcome!
+      <b-btn variant="danger" v-on:click="logout" size="sm">Logout</b-btn>
     </b-navbar>
     <br>
     <h2></h2>
@@ -56,6 +56,13 @@ export default Vue.extend({
           { id: 2, color_name: 'Red', hex_code: '#FF0000', color: null, actions: {}},
           { id: 3, color_name: 'Green', hex_code: '#00FF00', color: null, actions: {}}
         ]
+    }
+  },
+  methods: {
+    async logout() {
+      await this.$auth.logout().then(() => {
+        location.reload()
+      })
     }
   }
 })

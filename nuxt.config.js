@@ -1,6 +1,6 @@
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  ssr: true,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -17,6 +17,39 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }
     ]
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'data.result.access_token',
+          global: true,
+          required: true,
+          type: 'Bearer'
+        },
+        endpoints: {
+          login: { url: '/api/admin/login_json', method: 'post' },
+          logout: false,
+          user: false
+        },
+        redirect: {
+          login: '/login',
+          logout: '/login',
+          home: '/',
+        },
+        watchLoggedIn: true,
+        rewriteRedirects: true,
+      }
+    }
+  },
+
+  router: {
+    middleware: ['auth']
+  },
+
+  axios: {
+    baseURL: 'https://sys-dev.searchandstay.com'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -40,6 +73,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
