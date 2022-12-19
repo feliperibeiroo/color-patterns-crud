@@ -1,5 +1,3 @@
-# color_patterns_crud
-
 ## Build Setup
 
 ```bash
