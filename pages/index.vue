@@ -10,18 +10,31 @@
     </b-navbar>
     <br>
     <h2></h2>
-    <h5>Manage your colors below:</h5>
-    <b-btn variant="primary">Add Color</b-btn>
+    <h5>Manage your color patterns below:</h5>
+    <b-btn @click="showModal" variant="primary">Add Color Pattern</b-btn>
     <b-table 
       class="colors-table"
       hover 
-      :items="items"
+      :items="items.map((item) => {item.actions = {}; return item})"
     >
-      <template #cell(color)="row">
-        <div class="color-circle" :style="`background-color: ${row.item.hex_code}`"></div>
+      <template #cell(text_color)="row">
+        <div class="color-preview--table">
+          <span class="mr-1">{{ row.item.text_color }}</span>
+          <div class="color-circle" :style="`background-color: ${row.item.text_color}`"></div>
+        </div>
+      </template>
+      <template #cell(bg_color)="row">
+        <div class="color-preview--table">
+          <span class="mr-1">{{ row.item.bg_color }}</span>
+          <div class="color-circle" :style="`background-color: ${row.item.bg_color}`"></div>
+        </div>
       </template>
       <template #cell(actions)="row">
-        <b-button size="sm" variant="primary" class="mr-1">
+        <b-button 
+          size="sm" 
+          variant="primary" 
+          class="mr-1"
+          @click="showModal(row.item)">
           Edit
         </b-button>
         <b-button size="sm" variant="danger">
@@ -42,6 +55,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import Color from '~/models/Color'
 
 export default Vue.extend({
   name: 'IndexPage',
@@ -53,9 +67,9 @@ export default Vue.extend({
         perPage: 5
       },
       items: [
-          { id: 1, color_name: 'Black', hex_code: '#000000', color: null, actions: {} },
-          { id: 2, color_name: 'Red', hex_code: '#FF0000', color: null, actions: {}},
-          { id: 3, color_name: 'Green', hex_code: '#00FF00', color: null, actions: {}}
+          { id: 1, bg_color: '#FF0000', text_color: '#000000', active: true, actions: {} },
+          { id: 2, bg_color: '#0000FF', text_color: '#FF0000', active: true, actions: {} },
+          { id: 3, bg_color: '#000000', text_color: '#0000FF', active: true, actions: {} }
         ]
     }
   },
@@ -64,6 +78,9 @@ export default Vue.extend({
       await this.$auth.logout().then(() => {
         location.reload()
       })
+    },
+    showModal(color?: Color) {
+      this.$nuxt.$emit('showModal', color)
     }
   }
 })
@@ -88,5 +105,9 @@ export default Vue.extend({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.color-preview--table {
+  display: flex;
 }
 </style>
