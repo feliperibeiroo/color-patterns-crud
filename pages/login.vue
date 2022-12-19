@@ -36,6 +36,7 @@
                 required
                 ></b-form-input>
             </b-form-group>
+            <b-alert :show="errorOnLogin" variant="danger">Login Failed</b-alert>
 
             <b-button type="submit" variant="primary">Login</b-button>
         </b-form>
@@ -50,6 +51,7 @@ export default Vue.extend({
   name: 'LoginPage',
   data() {
     return {
+        errorOnLogin: false,
         login: {
             email: "",
             password: ""
@@ -59,7 +61,10 @@ export default Vue.extend({
   methods: {
     async userLogin() {
       try {
-        let response = await this.$auth.loginWith('local', { data: { login: this.login } })
+        this.errorOnLogin = false
+        let response = await this.$auth.loginWith('local', { data: { login: this.login } }).catch(() => {
+            this.errorOnLogin = true
+        })
         console.log(response)
       } catch (err) {
         console.log(err)

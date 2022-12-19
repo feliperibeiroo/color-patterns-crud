@@ -1,5 +1,6 @@
 <template>
   <div class="principal-container container">
+    <ModalCreateUpdateColor/>
     <b-navbar toggleable type="light" variant="light">
       <b-navbar-brand href="#">
         <img width="40px" src="favicon.png" alt="ICON">
