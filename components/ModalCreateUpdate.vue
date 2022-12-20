@@ -1,7 +1,8 @@
 <template>
   <b-modal 
     id="modal-1"
-    :visible="visible"
+    v-model="visible"
+    :title="title"
     size="sm"
     >
     <b-form 
@@ -67,6 +68,7 @@ export default Vue.extend({
   data() {
     return {
       visible: false,
+      title: '',
       color: {
         id: undefined,
         bg_color: '#937263',
@@ -76,10 +78,12 @@ export default Vue.extend({
     }
   },
   beforeMount() {
-    this.$nuxt.$on('showModal', (payload?: Color) => {
-      if (payload) {
-        this.color = payload
+    this.$nuxt.$on('showModalCreateUpdate', (color?: Color) => {
+      if (color) {
+        this.title = 'Edit Pattern'
+        this.color = color
       } else {
+        this.title = 'Add Pattern'
         this.reset()
       }
       this.visible = true
@@ -93,9 +97,6 @@ export default Vue.extend({
       this.color.id = undefined;
       this.color.bg_color = '#000000';
       this.color.text_color = '#000000';
-    },
-    setColor(color: Color) {
-      this.color = color
     }
   }
 })

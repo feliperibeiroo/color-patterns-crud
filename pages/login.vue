@@ -65,8 +65,8 @@ export default Vue.extend({
         let response = await this.$auth.loginWith('local', { data: { login: this.login } }).catch(() => {
             this.errorOnLogin = true
         })
-        console.log(response)
       } catch (err) {
+        this.$nuxt.$emit('errorAlert', 'Error on login')
         console.log(err)
       }
     }

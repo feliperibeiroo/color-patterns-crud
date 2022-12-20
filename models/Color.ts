@@ -3,4 +3,5 @@ export default interface Color {
     bg_color?: string
     text_color?: string
     active?: boolean
+    order?: number
 }

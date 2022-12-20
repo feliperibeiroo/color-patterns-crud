@@ -1,6 +1,8 @@
 <template>
   <div class="principal-container container">
-    <ModalCreateUpdateColor/>
+    <ModalCreateUpdate/>
+    <ModalDelete/>
+    <Alert/>
     <b-navbar toggleable type="light" variant="light">
       <b-navbar-brand href="#">
         <img width="40px" src="favicon.png" alt="ICON">
@@ -11,17 +13,22 @@
     <br>
     <h2></h2>
     <h5>Manage your color patterns below:</h5>
-    <b-btn @click="showModal" variant="primary">Add Color Pattern</b-btn>
+    <b-btn @click.prevent="showModalCreateUpdate()" variant="primary">Add Color Pattern</b-btn>
     <b-table 
       class="colors-table"
       hover 
-      :items="items.map((item) => {item.actions = {}; return item})"
+      :items="items"
+      :table-busy="busy"
     >
       <template #cell(text_color)="row">
         <div class="color-preview--table">
           <span class="mr-1">{{ row.item.text_color }}</span>
           <div class="color-circle" :style="`background-color: ${row.item.text_color}`"></div>
         </div>
+      </template>
+      <template #cell(active)="row">
+        <b-icon v-if="row.item.active==1" icon="check"></b-icon>
+        <b-icon v-else icon="x"></b-icon>
       </template>
       <template #cell(bg_color)="row">
         <div class="color-preview--table">
@@ -34,10 +41,14 @@
           size="sm" 
           variant="primary" 
           class="mr-1"
-          @click="showModal(row.item)">
+          @click.prevent="showModalCreateUpdate(row.item)">
           Edit
         </b-button>
-        <b-button size="sm" variant="danger">
+        <b-button 
+          size="sm" 
+          variant="danger"
+          @click.prevent="showModalDelete(row.item.id)"
+        >
           Delete
         </b-button>
       </template>
@@ -56,6 +67,9 @@
 <script lang="ts">
 import Vue from 'vue'
 import Color from '~/models/Color'
+import { IconsPlugin } from 'bootstrap-vue'
+
+Vue.use(IconsPlugin)
 
 export default Vue.extend({
   name: 'IndexPage',
@@ -63,15 +77,25 @@ export default Vue.extend({
     return {
       pagination: {
         currentPage: 1,
-        rows: 29,
-        perPage: 5
+        rows: 1,
+        perPage: 1,
       },
-      items: [
-          { id: 1, bg_color: '#FF0000', text_color: '#000000', active: true, actions: {} },
-          { id: 2, bg_color: '#0000FF', text_color: '#FF0000', active: true, actions: {} },
-          { id: 3, bg_color: '#000000', text_color: '#0000FF', active: true, actions: {} }
-        ]
+      busy: false,
+      items: [] as Array<Color>
     }
+  },
+  async fetch() {
+    this.busy = true
+    let response = await this.$store.dispatch('listColorPatterns')
+    console.log(response);
+    
+    if (response) {
+      this.pagination.currentPage = response.pagination.current_page
+      this.pagination.perPage = response.pagination.per_page
+      this.pagination.rows = response.pagination.total
+      this.items = response.entities
+    }
+    this.busy = false
   },
   methods: {
     async logout() {
@@ -79,9 +103,12 @@ export default Vue.extend({
         location.reload()
       })
     },
-    showModal(color?: Color) {
-      this.$nuxt.$emit('showModal', color)
-    }
+    showModalCreateUpdate(color?: Color) {
+      this.$nuxt.$emit('showModalCreateUpdate', color)
+    },
+    showModalDelete(idColor?: number) {
+      this.$nuxt.$emit('showDeleteConfirmation', idColor)
+    },
   }
 })
 </script>
