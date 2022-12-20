@@ -17,61 +17,77 @@ export const mutations: MutationTree<RootState> = {
 };
 
 export const actions: ActionTree<RootState, RootState> = {
-  async listColorPatterns({ commit }) {
-    const response = await this.$axios.$get("/api/admin/calendar_patterns");
+
+  async listColorPatterns(context, page:number=1) {
+    const response = await this.$axios.$get("/api/admin/calendar_patterns", {
+        params: { page }
+    });
     if (response?.success) {
-      return response.data
+      return response.data;
     } else {
       window.$nuxt.$emit("errorAlert", "Request Error");
     }
   },
 
-  async getColorPattern({ commit }, idColorPattern: number) {
+  async getColorPattern(context, idColorPattern:number) {
     const response = await this.$axios.$get(
       `/api/admin/calendar_patterns/${idColorPattern}`
     );
-    if (response?.data) {
-      if (response.data.success==200) {
-        console.log(response);
-      }
+    if (response?.success) {
+        console.log(response.data);
+        return response.data;
     } else {
-      window.$nuxt.$emit("errorAlert", "Request Error");
+        window.$nuxt.$emit("errorAlert", "Request Error");
     }
   },
 
-  async createColorPattern({ commit }, colorPattern: Color) {
+  async createColorPattern(context, colorPattern: Color) {
+    window.$nuxt.$loading.start()
     const response = await this.$axios.$post("/api/admin/calendar_patterns", {
         calendar_patterns: colorPattern,
     });
-    if (response?.data) {
-        if (response.data.success==200) {
-          console.log(response);
-          window.$nuxt.$emit("successAlert", "Color Pattern Created");
-        }
+    window.$nuxt.$loading.finish()
+
+    if (response?.success) {
+        console.log(response.data);
+        window.$nuxt.$emit("successAlert", "Color Pattern Created");
+        window.$nuxt.$emit('fetchData')
+        return response.data;
     } else {
-      window.$nuxt.$emit("errorAlert", "Request Error");
+        window.$nuxt.$emit("errorAlert", "Request Error");
     }
   },
 
-  async updateColorPattern({ commit }, colorPattern: Color) {
+  async updateColorPattern(context, colorPattern: Color) {
+    window.$nuxt.$loading.start()
     const response = await this.$axios.$put(`/api/admin/calendar_patterns/${colorPattern.id}`, {
         calendar_patterns: colorPattern,
     });
-    if (response) {
-      window.$nuxt.$emit("successAlert", "Color Pattern Updated");
+    window.$nuxt.$loading.finish()
+    if (response?.success) {
+        console.log(response.data);
+        window.$nuxt.$emit("successAlert", "Color Pattern Updated");
+        window.$nuxt.$emit('fetchData')
+        return response.data;
     } else {
-      window.$nuxt.$emit("errorAlert", "Request Error");
+        window.$nuxt.$emit("errorAlert", "Request Error");
     }
   },
 
-  async deleteColorPattern({ commit }, idColorPattern: number) {
+  async deleteColorPattern(context, idColorPattern: number) {
+    window.$nuxt.$loading.start()
     const response = await this.$axios.$delete(
       `/api/admin/calendar_patterns/${idColorPattern}`
     );
-    if (response) {
-      window.$nuxt.$emit("successAlert", "Color Pattern Deleted");
+    window.$nuxt.$loading.finish()
+    if (response?.success) {
+        console.log(response.data);
+        window.$nuxt.$emit("successAlert", "Color Pattern Deleted");
+        window.$nuxt.$emit('fetchData')
+        return response.data;
     } else {
-      window.$nuxt.$emit("errorAlert", "Request Error");
+        window.$nuxt.$emit("errorAlert", "Request Error");
     }
-  },
+  }
+
 };

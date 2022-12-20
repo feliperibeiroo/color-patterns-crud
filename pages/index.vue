@@ -5,25 +5,33 @@
     <Alert/>
     <b-navbar toggleable type="light" variant="light">
       <b-navbar-brand href="#">
-        <img width="40px" src="favicon.png" alt="ICON">
+        <img width="40px" src="favicon.png" alt="icon">
       </b-navbar-brand>
       Hello Dear, You're Welcome!
-      <b-btn variant="danger" v-on:click="logout" size="sm">Logout</b-btn>
+      <b-btn variant="danger" v-on:click="logout" size="sm">
+        Logout
+      </b-btn>
     </b-navbar>
     <br>
     <h2></h2>
     <h5>Manage your color patterns below:</h5>
-    <b-btn @click.prevent="showModalCreateUpdate()" variant="primary">Add Color Pattern</b-btn>
+    <b-btn @click.prevent="showModalCreateUpdate()" variant="primary">
+      Add Color Pattern
+    </b-btn>
     <b-table 
       class="colors-table"
       hover 
       :items="items"
-      :table-busy="busy"
+      :fields="fields"
+      :busy="busy"
     >
       <template #cell(text_color)="row">
         <div class="color-preview--table">
           <span class="mr-1">{{ row.item.text_color }}</span>
-          <div class="color-circle" :style="`background-color: ${row.item.text_color}`"></div>
+          <div 
+            class="color-circle" 
+            :style="`background-color: ${row.item.text_color}`"
+          ></div>
         </div>
       </template>
       <template #cell(active)="row">
@@ -33,7 +41,10 @@
       <template #cell(bg_color)="row">
         <div class="color-preview--table">
           <span class="mr-1">{{ row.item.bg_color }}</span>
-          <div class="color-circle" :style="`background-color: ${row.item.bg_color}`"></div>
+          <div 
+            class="color-circle" 
+            :style="`background-color: ${row.item.bg_color}`"
+          ></div>
         </div>
       </template>
       <template #cell(actions)="row">
@@ -55,10 +66,10 @@
     </b-table>
     <div class="pagination-container">
       <b-pagination
+        @change="changePage"
         v-model="pagination.currentPage"
         :total-rows="pagination.rows"
         :per-page="pagination.perPage"
-        aria-controls="my-table"
       ></b-pagination>
     </div>
   </div>
@@ -75,6 +86,7 @@ export default Vue.extend({
   name: 'IndexPage',
   data () {
     return {
+      fields: ['id', 'bg_color', 'text_color', 'active', 'actions'],
       pagination: {
         currentPage: 1,
         rows: 1,
@@ -84,29 +96,41 @@ export default Vue.extend({
       items: [] as Array<Color>
     }
   },
+  beforeMount () {
+    this.$nuxt.$on('fetchData', () => {
+      this.fetchData()
+    })
+  },
   async fetch() {
-    this.busy = true
-    let response = await this.$store.dispatch('listColorPatterns')
-    console.log(response);
-    
-    if (response) {
-      this.pagination.currentPage = response.pagination.current_page
-      this.pagination.perPage = response.pagination.per_page
-      this.pagination.rows = response.pagination.total
-      this.items = response.entities
-    }
-    this.busy = false
+    await this.fetchData()
   },
   methods: {
+    async changePage(pageNumber:number) {
+      this.pagination.currentPage = pageNumber
+      
+      this.fetchData()
+    },
     async logout() {
       await this.$auth.logout().then(() => {
         location.reload()
       })
     },
-    showModalCreateUpdate(color?: Color) {
+    async fetchData() {
+      this.busy = true
+      let response = await this.$store.dispatch('listColorPatterns', this.pagination.currentPage)
+      
+      if (response) {
+        this.pagination.currentPage = response.pagination.current_page
+        this.pagination.perPage = response.pagination.per_page
+        this.pagination.rows = response.pagination.total
+        this.items = response.entities
+      }
+      this.busy = false
+    },
+    async showModalCreateUpdate(color?: Color) {
       this.$nuxt.$emit('showModalCreateUpdate', color)
     },
-    showModalDelete(idColor?: number) {
+    async showModalDelete(idColor?: number) {
       this.$nuxt.$emit('showDeleteConfirmation', idColor)
     },
   }

@@ -62,7 +62,7 @@ export default Vue.extend({
     async userLogin() {
       try {
         this.errorOnLogin = false
-        let response = await this.$auth.loginWith('local', { data: { login: this.login } }).catch(() => {
+        await this.$auth.loginWith('local', { data: { login: this.login } }).catch(() => {
             this.errorOnLogin = true
         })
       } catch (err) {

@@ -36,8 +36,9 @@ export default Vue.extend({
     })
   },
   methods:  {
-    deletePattern() {
-
+    async deletePattern() {
+      this.hide()
+      await this.$store.dispatch('deleteColorPattern', this.idColor)
     },
     hide() {
       this.visible = false

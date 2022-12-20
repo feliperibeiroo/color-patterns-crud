@@ -26,7 +26,8 @@ export default {
           property: 'data.result.access_token',
           global: true,
           required: true,
-          type: 'Bearer'
+          type: 'Bearer',
+          maxAge: 300
         },
         endpoints: {
           login: { url: '/api/admin/login_json', method: 'post' },
@@ -58,6 +59,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -76,6 +78,8 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/auth-next'
   ],
+
+  loading: '~/components/Loading.vue',
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

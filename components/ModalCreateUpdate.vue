@@ -4,11 +4,10 @@
     v-model="visible"
     :title="title"
     size="sm"
+    @ok="save"
+    @cancel="hide"
     >
-    <b-form 
-      @submit="save" 
-      @reset="reset"
-    >
+    <b-form>
     <div class="row">
       <b-form-group
         id="input-group-1"
@@ -91,7 +90,17 @@ export default Vue.extend({
   },
   methods:  {
     save() {
-
+      if (this.color.id) {
+        //UPDATE
+        this.$store.dispatch('updateColorPattern', this.color)
+      } else {
+        //CREATE
+        this.$store.dispatch('createColorPattern', this.color)
+      }
+      this.hide()
+    },
+    hide() {
+      this.visible = false
     },
     reset() {
       this.color.id = undefined;

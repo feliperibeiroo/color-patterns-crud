@@ -18,7 +18,7 @@ export default Vue.extend({
         return {
             msg: '',
             variant: 'primary',
-            dismissSecs: 5,
+            dismissSecs: 3,
             dismissCountDown: 0,
             showDismissibleAlert: false
         }
@@ -48,10 +48,11 @@ export default Vue.extend({
 </script>
 <style lang="scss" scoped>
 .alert-container {
+    z-index: 999;
     position: absolute;
     bottom: 40px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .alert {
